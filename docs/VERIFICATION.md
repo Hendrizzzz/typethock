@@ -1,5 +1,34 @@
 # TypeThock verification record
 
+## Production domain moved to typethock.vercel.app
+
+Verified: 2026-08-23 (Asia/Manila)
+
+Scope: live production checks of the renamed frontend domain and the same-origin
+API rewrite. This section records external infrastructure state, not local
+test evidence.
+
+The Vercel project was renamed `typewriting` to `typethock` in the
+`hendrizzzzs-projects` Hobby team. Because renaming does not move attached
+`.vercel.app` domains, `typethock.vercel.app` was added as an explicit
+Production domain; both domains serve the same Production deployment.
+
+Observed from this machine on 2026-08-23:
+
+- `https://typethock.vercel.app/` returned HTTP 200 with the expected document
+  title (`TypeThock — typing practice`) and hashed asset links.
+- `https://typethock.vercel.app/api/actuator/health/readiness` reached the
+  Spring API through the Vercel rewrite and returned the documented
+  RFC-7807 authentication response with a request ID in under one second,
+  proving same-origin routing into Render. The readiness probe path requires
+  authentication when addressed through `/api`; direct backend health was
+  verified separately as `{"status":"UP"}` during the 2026-08-22 Render
+  service migration recorded below.
+- Raw deployment URLs and non-production aliases remain behind Vercel SSO
+  Deployment Protection; only attached production domains are public.
+- `https://typewriting-three.vercel.app` continued serving during the
+  transition window.
+
 ## Unreleased content-expansion candidate
 
 Verified locally: 2026-08-10 (Asia/Manila)
