@@ -22,6 +22,7 @@ function renderCapture(
   const onRestart = vi.fn();
   const onNavigateToRestart = vi.fn();
   const onNotice = vi.fn();
+  const onKeystroke = vi.fn();
   render(
     <TypingCapture
       status={status}
@@ -38,6 +39,7 @@ function renderCapture(
       onRestart={onRestart}
       onNavigateToRestart={onNavigateToRestart}
       onNotice={onNotice}
+      onKeystroke={onKeystroke}
       captureRef={createRef<HTMLTextAreaElement>()}
     />,
   );
@@ -52,6 +54,7 @@ function renderCapture(
     onRestart,
     onNavigateToRestart,
     onNotice,
+    onKeystroke,
   };
 }
 
@@ -488,4 +491,53 @@ describe("TypingCapture", () => {
       expect(onRestart).toHaveBeenCalledTimes(restarts ? 1 : 0);
     },
   );
+
+  it("fires a key keystroke for text inserts", () => {
+    const { input, onInsert, onKeystroke } = renderCapture();
+    const event = new InputEvent("beforeinput", {
+      bubbles: true,
+      cancelable: true,
+      data: "ab",
+      inputType: "insertText",
+    });
+
+    fireEvent(input, event);
+
+    expect(onInsert).toHaveBeenCalledOnce();
+    expect(onKeystroke).toHaveBeenCalledOnce();
+    expect(onKeystroke).toHaveBeenCalledWith("key");
+  });
+
+  it("fires a space keystroke when only a space is inserted", () => {
+    const { input, onKeystroke } = renderCapture();
+    const event = new InputEvent("beforeinput", {
+      bubbles: true,
+      cancelable: true,
+      data: " ",
+      inputType: "insertText",
+    });
+
+    fireEvent(input, event);
+
+    expect(onKeystroke).toHaveBeenCalledOnce();
+    expect(onKeystroke).toHaveBeenCalledWith("space");
+  });
+
+  it("fires a backspace keystroke for backspaces and word deletion", () => {
+    const { input, onKeystroke } = renderCapture("running");
+
+    fireEvent.keyDown(input, { key: "Backspace" });
+    fireEvent(
+      input,
+      new InputEvent("beforeinput", {
+        bubbles: true,
+        cancelable: true,
+        inputType: "deleteWordBackward",
+      }),
+    );
+
+    expect(onKeystroke).toHaveBeenCalledTimes(2);
+    expect(onKeystroke).toHaveBeenNthCalledWith(1, "backspace");
+    expect(onKeystroke).toHaveBeenNthCalledWith(2, "backspace");
+  });
 });

@@ -14,6 +14,7 @@ import {
   segmentGraphemes,
   translateBeforeInput,
 } from "./inputAdapter";
+import type { KeystrokeSoundKind } from "./keyboardSound";
 
 interface TypingCaptureProps {
   status: "ready" | "running" | "completed";
@@ -30,6 +31,8 @@ interface TypingCaptureProps {
   onRestart: () => void;
   onNavigateToRestart: () => void;
   onNotice: (message: string) => void;
+  /** Optional presentation-side hook fired for every committed keystroke. */
+  onKeystroke?: (kind: KeystrokeSoundKind) => void;
   captureRef: RefObject<HTMLTextAreaElement | null>;
 }
 
@@ -58,6 +61,7 @@ export function TypingCapture({
   onRestart,
   onNavigateToRestart,
   onNotice,
+  onKeystroke,
   captureRef,
 }: TypingCaptureProps) {
   const composing = useRef(false);
@@ -85,10 +89,17 @@ export function TypingCapture({
   const applyDecision = useCallback(
     (decision: ReturnType<typeof translateBeforeInput>) => {
       if (decision.kind === "insert") {
+        onKeystroke?.(
+          decision.graphemes[0] === " " && decision.graphemes.length === 1
+            ? "space"
+            : "key",
+        );
         onInsert(decision.graphemes);
       } else if (decision.kind === "backspace") {
+        onKeystroke?.("backspace");
         onBackspace();
       } else if (decision.kind === "deleteWordBackward") {
+        onKeystroke?.("backspace");
         onDeleteWordBackward();
       } else if (decision.kind === "reject") {
         onNotice(
@@ -98,7 +109,7 @@ export function TypingCapture({
         );
       }
     },
-    [onBackspace, onDeleteWordBackward, onInsert, onNotice],
+    [onBackspace, onDeleteWordBackward, onInsert, onKeystroke, onNotice],
   );
 
   useLayoutEffect(() => {
@@ -195,6 +206,7 @@ export function TypingCapture({
         !event.metaKey
       ) {
         event.preventDefault();
+        onKeystroke?.("space");
         onInsert(["\n"]);
         return;
       }
@@ -208,6 +220,7 @@ export function TypingCapture({
       }
       if (event.key === "Backspace") {
         event.preventDefault();
+        onKeystroke?.("backspace");
         onBackspace();
         return;
       }
@@ -221,6 +234,7 @@ export function TypingCapture({
       codeMode,
       onDeleteWordBackward,
       onInsert,
+      onKeystroke,
       onNavigateToRestart,
       onRestart,
       status,

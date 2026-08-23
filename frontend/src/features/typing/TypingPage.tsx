@@ -5,6 +5,16 @@ import { ResultsView } from "./ResultsView";
 import { leadingCodeIndentation, typableTarget } from "./targetText";
 import { TestControls } from "./TestControls";
 import { TypingCapture } from "./TypingCapture";
+import {
+  playKeystroke,
+  primeKeyboardSound,
+  type KeystrokeSoundKind,
+} from "./keyboardSound";
+import {
+  loadKeyboardSound,
+  saveKeyboardSound,
+  type KeyboardSoundPrefs,
+} from "./storage";
 import { useTypingSession } from "./useTypingSession";
 
 const MODIFIER_KEYS = new Set([
@@ -45,6 +55,19 @@ export function TypingPage() {
   const [notice, setNotice] = useState("");
   const [compositionText, setCompositionText] = useState("");
   const [captureFocused, setCaptureFocused] = useState(false);
+  const [sound, setSound] = useState<KeyboardSoundPrefs>(() =>
+    loadKeyboardSound(),
+  );
+  const updateSound = useCallback((next: KeyboardSoundPrefs) => {
+    setSound(next);
+    saveKeyboardSound(next);
+  }, []);
+  const handleKeystroke = useCallback(
+    (kind: KeystrokeSoundKind) => {
+      if (sound.enabled) playKeystroke(kind, sound.volume);
+    },
+    [sound],
+  );
   const currentWord = state.prompt.words[state.wordIndex] ?? "";
   const leadingSpaceCount = leadingCodeIndentation(currentWord);
   const currentTypableTarget = typableTarget(
@@ -165,6 +188,8 @@ export function TypingPage() {
             firstControlRef={firstControlRef}
             config={state.config}
             disabled={controlsDisabled}
+            sound={sound}
+            onSoundChange={updateSound}
             onChange={(config, customText) => {
               changeConfig(config, customText);
               focusCapture();
@@ -367,12 +392,16 @@ export function TypingPage() {
         onBackspace={backspace}
         onDeleteWordBackward={deleteWordBackward}
         onCompositionChange={setCompositionText}
-        onFocusChange={setCaptureFocused}
+        onFocusChange={(focused) => {
+          setCaptureFocused(focused);
+          if (focused && sound.enabled) primeKeyboardSound();
+        }}
         onRestart={restartAndFocus}
         onNavigateToRestart={() => {
           restartButtonRef.current?.focus({ preventScroll: true });
         }}
         onNotice={setNotice}
+        onKeystroke={handleKeystroke}
       />
       <p className="sr-only" role="status" aria-live="polite">
         {notice}
