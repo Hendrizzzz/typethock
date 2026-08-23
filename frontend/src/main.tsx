@@ -1,5 +1,6 @@
 import "@fontsource-variable/newsreader";
 import "@fontsource-variable/public-sans";
+import "@fontsource-variable/roboto-mono";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
