@@ -117,8 +117,8 @@ that do not use certificate and hostname verification plus channel binding.
 ## 2. Create the Render API
 
 In Render, create a Blueprint from
-`https://github.com/Hendrizzzz/typewriting`. Render reads `render.yaml` and
-creates the `typethock-typewriting-api` Docker web service on the free plan.
+`https://github.com/Hendrizzzz/typethock`. Render reads `render.yaml` and
+creates the `typethock-api` Docker web service on the free plan.
 
 Provide these secret values when the Blueprint asks:
 
@@ -166,8 +166,10 @@ free quota. The global budgets deliberately bound expensive work on the one
 free instance; an attacker can also consume a budget temporarily, so they are
 not a substitute for a source-aware distributed edge limiter.
 
-If Render assigns a hostname other than
-`typethock-typewriting-api.onrender.com`, update the destination in
+The service keeps the pre-rebrand hostname
+`typethock-typewriting-api.onrender.com`: Render charges for changing the
+`onrender.com` subdomain, so only the display name became `typethock-api`.
+If the hostname ever changes, update the destination in
 `frontend/vercel.json` before deploying Vercel.
 
 ## 3. Create the Vercel frontend

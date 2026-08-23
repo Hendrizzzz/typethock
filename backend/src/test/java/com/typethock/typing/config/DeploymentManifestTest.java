@@ -35,7 +35,7 @@ class DeploymentManifestTest {
         assertThat(services).hasSize(1);
         Map<String, Object> service = services.getFirst();
         assertThat(service)
-                .containsEntry("name", "typethock-typewriting-api")
+                .containsEntry("name", "typethock-api")
                 .containsEntry("type", "web")
                 .containsEntry("runtime", "docker")
                 .containsEntry("plan", "free")
@@ -121,10 +121,7 @@ class DeploymentManifestTest {
         assertThat(rewrites.size()).isEqualTo(2);
         assertThat(rewrites.get(0).get("source").stringValue()).isEqualTo("/api/:path*");
         assertThat(rewrites.get(0).get("destination").stringValue())
-                .isEqualTo(
-                        "https://"
-                                + service.get("name")
-                                + ".onrender.com/api/:path*");
+                .isEqualTo("https://typethock-typewriting-api.onrender.com/api/:path*");
         assertThat(rewrites.get(1).get("source").stringValue()).isEqualTo("/:path*");
         assertThat(rewrites.get(1).get("destination").stringValue()).isEqualTo("/index.html");
 

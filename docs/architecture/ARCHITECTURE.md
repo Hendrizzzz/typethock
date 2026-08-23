@@ -24,7 +24,7 @@ No third-party runtime script, analytics SDK, UI kit, state library, or animatio
 ## Repository shape
 
 ```text
-TypeWriting/
+typethock/
   backend/
     pom.xml
     src/main/java/com/typethock/typing/

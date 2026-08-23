@@ -61,7 +61,7 @@ export const PRACTICE_QUOTES_V1: readonly PracticeQuote[] = [
 ] as const;
 
 const ORIGINAL_SOURCE_URL =
-  "https://github.com/Hendrizzzz/typewriting/blob/main/docs/CONTENT_CORPUS.md";
+  "https://github.com/Hendrizzzz/typethock/blob/main/docs/CONTENT_CORPUS.md";
 
 const ORIGINAL_QUOTES_V2 = [
   {

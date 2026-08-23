@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: typethock-typewriting-api
+    name: typethock-api
     runtime: docker
     plan: free
     region: singapore
-    repo: https://github.com/Hendrizzzz/typewriting
+    repo: https://github.com/Hendrizzzz/typethock
     branch: main
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
