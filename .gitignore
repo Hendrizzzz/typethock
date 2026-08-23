@@ -32,3 +32,6 @@ frontend/output/
 artifacts/
 .playwright-cli/
 output/
+
+# Session transcripts (may contain pasted secrets)
+session-*.md
