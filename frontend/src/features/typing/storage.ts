@@ -560,3 +560,35 @@ export function saveGuestResult(
     deduplicated: false,
   };
 }
+
+const SOUND_KEY = "typethock.keyboard-sound.v1";
+
+export interface KeyboardSoundPrefs {
+  enabled: boolean;
+  /** Master volume from 0 to 1. */
+  volume: number;
+}
+
+export const DEFAULT_KEYBOARD_SOUND: KeyboardSoundPrefs = {
+  enabled: false,
+  volume: 0.7,
+};
+
+function isKeyboardSound(value: unknown): value is KeyboardSoundPrefs {
+  if (!isRecord(value) || typeof value.enabled !== "boolean") return false;
+  return (
+    typeof value.volume === "number" &&
+    Number.isFinite(value.volume) &&
+    value.volume >= 0 &&
+    value.volume <= 1
+  );
+}
+
+export function loadKeyboardSound(): KeyboardSoundPrefs {
+  const stored = readJson(SOUND_KEY);
+  return isKeyboardSound(stored) ? stored : DEFAULT_KEYBOARD_SOUND;
+}
+
+export function saveKeyboardSound(prefs: KeyboardSoundPrefs): boolean {
+  return writeJson(SOUND_KEY, prefs);
+}

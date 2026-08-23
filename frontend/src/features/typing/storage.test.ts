@@ -2,11 +2,14 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   DEFAULT_CONFIG,
+  DEFAULT_KEYBOARD_SOUND,
   hasLegacyGuestResults,
   isResultSaveEligible,
   loadGuestResults,
+  loadKeyboardSound,
   loadTestConfig,
   saveGuestResult,
+  saveKeyboardSound,
   saveTestConfig,
 } from "./storage";
 import { calculateConsistency } from "./scoring";
@@ -551,5 +554,38 @@ describe("typing local storage", () => {
       "result-1",
     );
     expect(loadGuestResults()).toEqual([result]);
+  });
+});
+
+describe("keyboard sound preferences", () => {
+  it("falls back to defaults on corrupt or missing data", () => {
+    localStorage.setItem("typethock.keyboard-sound.v1", "{broken");
+    expect(loadKeyboardSound()).toEqual(DEFAULT_KEYBOARD_SOUND);
+    localStorage.removeItem("typethock.keyboard-sound.v1");
+    expect(loadKeyboardSound()).toEqual(DEFAULT_KEYBOARD_SOUND);
+  });
+
+  it("rejects malformed shapes and out-of-range volumes", () => {
+    localStorage.setItem(
+      "typethock.keyboard-sound.v1",
+      JSON.stringify({ enabled: "yes", volume: 0.5 }),
+    );
+    expect(loadKeyboardSound()).toEqual(DEFAULT_KEYBOARD_SOUND);
+    localStorage.setItem(
+      "typethock.keyboard-sound.v1",
+      JSON.stringify({ enabled: true, volume: 2 }),
+    );
+    expect(loadKeyboardSound()).toEqual(DEFAULT_KEYBOARD_SOUND);
+    localStorage.setItem(
+      "typethock.keyboard-sound.v1",
+      JSON.stringify({ enabled: true, volume: Number.NaN }),
+    );
+    expect(loadKeyboardSound()).toEqual(DEFAULT_KEYBOARD_SOUND);
+  });
+
+  it("round trips valid preferences", () => {
+    const prefs = { enabled: true, volume: 0.35 };
+    expect(saveKeyboardSound(prefs)).toBe(true);
+    expect(loadKeyboardSound()).toEqual(prefs);
   });
 });

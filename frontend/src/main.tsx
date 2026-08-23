@@ -1,5 +1,5 @@
 import "@fontsource-variable/newsreader";
-import "@fontsource-variable/recursive";
+import "@fontsource-variable/public-sans";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

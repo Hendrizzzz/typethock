@@ -8,6 +8,8 @@ import {
 } from "react";
 
 import { validateCustomText } from "./prompt";
+import { primeKeyboardSound, playKeystroke } from "./keyboardSound";
+import type { KeyboardSoundPrefs } from "./storage";
 import {
   CODE_EXERCISE_COUNT,
   CODE_LANGUAGES,
@@ -30,6 +32,9 @@ interface TestControlsProps {
   disabled: boolean;
   onChange: (next: TestConfig, customText?: string) => void;
   firstControlRef?: RefObject<HTMLButtonElement | null>;
+  /** Optional keyboard-sound preference state and its persistence sink. */
+  sound?: KeyboardSoundPrefs;
+  onSoundChange?: (next: KeyboardSoundPrefs) => void;
 }
 
 export function TestControls({
@@ -37,6 +42,8 @@ export function TestControls({
   disabled,
   onChange,
   firstControlRef,
+  sound,
+  onSoundChange,
 }: TestControlsProps) {
   const editorDescriptionId = useId();
   const editorErrorId = useId();
@@ -310,6 +317,46 @@ export function TestControls({
           strict
         </button>
       </fieldset>
+
+      {sound && onSoundChange ? (
+        <fieldset className="control-group control-group--sound" data-control-label="sound">
+          <legend className="sr-only">Keyboard sound</legend>
+          <button
+            type="button"
+            // Deliberately usable mid-test: muting never touches test state.
+            aria-pressed={sound.enabled}
+            aria-label={`Thock keyboard sound ${sound.enabled ? "on" : "off"}`}
+            onClick={() => {
+              const next = { ...sound, enabled: !sound.enabled };
+              onSoundChange(next);
+              if (next.enabled) {
+                primeKeyboardSound();
+                playKeystroke("key", next.volume);
+              }
+            }}
+          >
+            thock
+          </button>
+          {sound.enabled ? (
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={sound.volume}
+              aria-label="Thock volume"
+              onChange={(event) => {
+                const next = {
+                  ...sound,
+                  volume: Number(event.currentTarget.value),
+                };
+                onSoundChange(next);
+                playKeystroke("key", next.volume);
+              }}
+            />
+          ) : null}
+        </fieldset>
+      ) : null}
 
       {editorOpen ? (
         <form
