@@ -39,7 +39,6 @@ const MODIFIER_KEYS = new Set([
 export function TypingPage() {
   const {
     state,
-    elapsedMs,
     remainingMs,
     saveStatus,
     insert,
@@ -219,9 +218,7 @@ export function TypingPage() {
                     ].join("/")}
               </span>
               <span>
-                {state.status === "ready"
-                  ? "begin when ready"
-                  : [(elapsedMs / 1_000).toFixed(1), " elapsed"].join("")}
+                {state.status === "ready" ? "begin when ready" : null}
               </span>
             </div>
             <div className="typing-stage-main">
