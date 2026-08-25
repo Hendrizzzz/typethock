@@ -437,24 +437,18 @@ export function PaceChart({ buckets }: PaceChartProps) {
               focusable="false"
               preserveAspectRatio="none"
             >
-              {yTicks.map((tick) => {
-                const y = (tick.position / 100) * CHART_HEIGHT;
-                return (
-                  <line
-                    className="pace-grid-line"
-                    key={tick.label}
-                    x1="0"
-                    y1={y}
-                    x2={CHART_WIDTH}
-                    y2={y}
-                  />
-                );
-              })}
               <line
                 className="pace-axis-line"
                 x1="0"
                 y1={PLOT_TOP}
                 x2="0"
+                y2={PLOT_BOTTOM}
+              />
+              <line
+                className="pace-axis-line"
+                x1="0"
+                y1={PLOT_BOTTOM}
+                x2={CHART_WIDTH}
                 y2={PLOT_BOTTOM}
               />
               {activePoint === undefined ? null : (

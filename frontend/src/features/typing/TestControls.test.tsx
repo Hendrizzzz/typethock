@@ -54,11 +54,7 @@ describe("TestControls", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "custom" }));
-    expect(
-      screen.getByText("It stays in this tab and is never uploaded.", {
-        exact: false,
-      }),
-    ).toBeVisible();
+    expect(screen.getByLabelText("Your practice text")).toBeVisible();
 
     fireEvent.click(screen.getByRole("button", { name: "use text" }));
     expect(screen.getByRole("alert")).toHaveTextContent(

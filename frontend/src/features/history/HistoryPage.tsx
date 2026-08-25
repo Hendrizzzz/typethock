@@ -357,17 +357,7 @@ export function HistoryPage() {
 
   return (
     <main className="history-page">
-      <div className="page-heading">
-        <p className="eyebrow">
-          {auth.user === null ? "this device" : "private history"}
-        </p>
-        <h1>History</h1>
-        <p>
-          {auth.user === null
-            ? "The latest one hundred guest runs stay in this browser."
-            : `Signed in as ${auth.user.username}. Results are ordered newest first.`}
-        </p>
-      </div>
+      <h1 className="sr-only">History</h1>
 
       {hasLegacyResults ? (
         <p className="legacy-history-notice" role="status">
@@ -383,7 +373,7 @@ export function HistoryPage() {
         </section>
       ) : state === "error" && rows.length === 0 ? (
         <section className="empty-state" role="alert">
-          <p>History could not be reached. Your local typing test still works.</p>
+          <p>History could not be reached.</p>
           <button type="button" onClick={() => window.location.reload()}>
             try again
           </button>
@@ -395,35 +385,25 @@ export function HistoryPage() {
         </section>
       ) : (
         <>
-          <section className="record-strip" aria-label="History summary">
-            <div>
-              <span>retained runs</span>
-              <strong>{summary.totalRuns}</strong>
-            </div>
-            <div>
-              <span>best</span>
-              <strong>{Math.round(summary.highestWpm)} wpm</strong>
-            </div>
-            <div>
-              <span>average accuracy</span>
-              <strong>{summary.averageAccuracy.toFixed(1)}%</strong>
-            </div>
-          </section>
-          {best !== null ? <PaceChart buckets={best.paceBuckets} /> : null}
-          <section className="personal-records" aria-labelledby="records-title">
-            <div>
-              <p className="eyebrow">by test</p>
-              <h2 id="records-title">Personal records</h2>
-            </div>
-            <ul>
-              {summary.records.map((record) => (
-                <li key={recordKey(record.result)}>
-                  <span>{formatMode(record.result)}</span>
-                  <strong>{Math.round(record.result.wpm)} wpm</strong>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <p className="history-stats">
+            <span>
+              <strong>{String(summary.totalRuns)}</strong> runs
+            </span>
+            <span>
+              <strong>{String(Math.round(summary.highestWpm))}</strong> best wpm
+            </span>
+            {best !== null ? (
+              <span>
+                <strong>{formatMode(best)}</strong> best run
+              </span>
+            ) : null}
+            <span>
+              <strong>{summary.averageAccuracy.toFixed(1)}%</strong> avg accuracy
+            </span>
+          </p>
+          {best !== null ? (
+            <PaceChart buckets={best.paceBuckets} />
+          ) : null}
           <div className="history-table-wrap">
             <table className="history-table">
               <caption>

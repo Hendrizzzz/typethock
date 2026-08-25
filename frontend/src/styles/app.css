@@ -82,6 +82,11 @@
 html {
   min-width: 320px;
   min-height: 100%;
+  /* Reserve the scrollbar slot on every page so the layout (header included)
+     doesn't shift when navigating between short and tall pages. The explicit
+     overflow keeps the slot in browsers without scrollbar-gutter support. */
+  scrollbar-gutter: stable;
+  overflow-y: scroll;
   background: var(--canvas);
 }
 
@@ -262,6 +267,7 @@ textarea:focus-visible {
 }
 
 .control-divider {
+  display: none;
   width: 1px;
   height: 1rem;
   background: var(--faint);
@@ -323,11 +329,10 @@ textarea:focus-visible {
 .custom-text-editor {
   flex-basis: 100%;
   margin-top: 0.7rem;
-  padding-top: 1.1rem;
+  padding-top: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.65rem 1rem;
-  border-top: 1px solid var(--faint);
 }
 
 .custom-text-editor label {
@@ -342,10 +347,9 @@ textarea:focus-visible {
   width: 100%;
   min-height: 7.5rem;
   resize: vertical;
-  padding: 0.85rem 0;
-  border: 0;
-  border-block: 1px solid var(--faint);
-  border-radius: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--faint);
+  border-radius: 0.35rem;
   background: transparent;
   color: var(--ink);
   line-height: 1.55;
@@ -882,7 +886,11 @@ textarea:focus-visible {
   font-variant-numeric: lining-nums tabular-nums;
   font-weight: 480;
   letter-spacing: -0.075em;
-  line-height: 0.8;
+  line-height: 0.95;
+}
+
+.result-primary .eyebrow {
+  margin-bottom: 0.9rem;
 }
 
 .result-details {
@@ -893,8 +901,8 @@ textarea:focus-visible {
 }
 
 .result-details div {
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--faint);
+  padding-top: 0;
+  border-top: 0;
 }
 
 .result-details dt {
@@ -948,14 +956,8 @@ textarea:focus-visible {
   overflow: hidden;
 }
 
-.pace-grid-line {
-  stroke: var(--faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
 .pace-axis-line {
-  stroke: var(--muted);
+  stroke: var(--faint);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -1272,35 +1274,12 @@ kbd {
 }
 
 .history-page {
-  padding: clamp(3rem, 8vh, 7rem) 0 4rem;
-}
-
-.page-heading {
-  width: min(100%, 42rem);
-}
-
-.page-heading h1 {
-  margin: 0;
-  font-family: "Newsreader Variable", Georgia, serif;
-  font-size: clamp(3.5rem, 8vw, 6.5rem);
-  font-style: italic;
-  font-weight: 480;
-  letter-spacing: -0.06em;
-  line-height: 0.9;
-}
-
-.page-heading > p:last-child {
-  max-width: 38rem;
-  margin: 1.5rem 0 0;
-  color: var(--muted);
-  line-height: 1.6;
+  padding: clamp(2.5rem, 6vh, 4.5rem) 0 4rem;
 }
 
 .legacy-history-notice {
   max-width: 42rem;
-  margin: 2rem 0 0;
-  padding-top: 0.8rem;
-  border-top: 1px solid var(--faint);
+  margin: 1.5rem 0 0;
   color: var(--muted);
   font-size: 0.72rem;
   line-height: 1.55;
@@ -1308,8 +1287,6 @@ kbd {
 
 .empty-state {
   margin-top: clamp(4rem, 12vh, 9rem);
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--faint);
 }
 
 .empty-state p {
@@ -1317,95 +1294,35 @@ kbd {
   color: var(--muted);
 }
 
-.record-strip {
-  margin-top: clamp(3.5rem, 8vh, 7rem);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-block: 1px solid var(--faint);
-}
-
-.record-strip div {
-  min-height: 7rem;
-  padding: 1.2rem 1.2rem 1.2rem 0;
+.history-stats {
+  margin: clamp(2.5rem, 6vh, 4.5rem) 0 0;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.record-strip div + div {
-  padding-left: 1.2rem;
-  border-left: 1px solid var(--faint);
-}
-
-.record-strip span {
+  flex-wrap: wrap;
+  gap: 0.4rem 1.75rem;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
 }
 
-.record-strip strong {
-  font-family: "Newsreader Variable", Georgia, serif;
-  font-size: clamp(1.7rem, 4vw, 3rem);
-  font-style: italic;
-  font-weight: 480;
+.history-stats span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.history-stats strong {
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .history-page > .pace-figure {
-  margin-top: 3rem;
-}
-
-.personal-records {
-  margin-top: 4rem;
-  padding-block: 1.5rem;
-  display: grid;
-  grid-template-columns: minmax(10rem, 0.6fr) minmax(0, 1.4fr);
-  gap: 2rem;
-  border-block: 1px solid var(--faint);
-}
-
-.personal-records h2 {
-  margin: 0.35rem 0 0;
-  font-family: "Newsreader Variable", Georgia, serif;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  font-style: italic;
-  font-weight: 480;
-  letter-spacing: -0.04em;
-}
-
-.personal-records ul {
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  list-style: none;
-}
-
-.personal-records li {
-  min-height: 3.25rem;
-  padding: 0.65rem 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  border-bottom: 1px solid var(--faint);
-  font-size: 0.75rem;
-}
-
-.personal-records li:nth-child(odd) {
-  margin-right: 1.5rem;
-}
-
-.personal-records li span {
-  color: var(--muted);
-}
-
-.personal-records li strong {
-  white-space: nowrap;
-  font-weight: 520;
+  margin-top: 3.25rem;
 }
 
 .history-table-wrap {
-  margin-top: 4rem;
+  margin-top: 2.75rem;
   overflow-x: auto;
 }
 
@@ -1425,16 +1342,43 @@ kbd {
 
 .history-table th,
 .history-table td {
-  padding: 1rem 1.25rem 1rem 0;
-  border-bottom: 1px solid var(--faint);
+  padding: 0.85rem 1.5rem 0.85rem 0;
+  border: 0;
   text-align: left;
   font-variant-numeric: tabular-nums;
 }
 
 .history-table th {
+  padding-top: 0;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--faint);
   color: var(--muted);
   font-size: 0.68rem;
   font-weight: 450;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.history-table th:nth-child(n + 3),
+.history-table td:nth-child(n + 3) {
+  text-align: right;
+}
+
+.history-table th:last-child,
+.history-table td:last-child {
+  padding-right: 0;
+}
+
+.history-table tbody tr {
+  transition: background 120ms ease-out;
+}
+
+.history-table tbody tr:hover {
+  background: color-mix(in srgb, var(--ink), transparent 96%);
+}
+
+.history-table tbody tr:hover td:first-child {
+  box-shadow: inset 2px 0 var(--accent);
 }
 
 .pending-result {
@@ -1446,7 +1390,6 @@ kbd {
 
 .history-table tr.is-pending-result td:first-child {
   box-shadow: inset 2px 0 var(--accent);
-  padding-left: 0.75rem;
 }
 
 .mobile-cell-label {
@@ -1747,7 +1690,7 @@ kbd {
   }
 
   .prompt-window {
-    max-height: 6.55em;
+    max-height: 6em;
   }
 
   .prompt-window--code {
@@ -1778,30 +1721,13 @@ kbd {
     justify-content: space-between;
   }
 
-  .record-strip {
-    grid-template-columns: 1fr;
+  .history-stats {
+    gap: 0.4rem 1.25rem;
   }
 
-  .record-strip div {
-    min-height: 5.5rem;
-  }
-
-  .record-strip div + div {
-    padding-left: 0;
-    border-top: 1px solid var(--faint);
-    border-left: 0;
-  }
-
-  .personal-records {
-    grid-template-columns: 1fr;
-  }
-
-  .personal-records ul {
-    grid-template-columns: 1fr;
-  }
-
-  .personal-records li:nth-child(odd) {
-    margin-right: 0;
+  .history-table th,
+  .history-table td {
+    padding-right: 1rem;
   }
 
   .history-table,
@@ -1838,12 +1764,8 @@ kbd {
     font-size: 0.68rem;
   }
 
-  .site-footer span:first-child {
-    display: none;
-  }
-
   .site-footer {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 }
 
@@ -1902,7 +1824,7 @@ kbd {
   }
 
   .prompt-window {
-    max-height: 3.2em;
+    max-height: 3em;
   }
 
   .prompt-window--code {
@@ -1944,7 +1866,7 @@ body {
 }
 
 .site-header {
-  height: 6.5rem;
+  height: 5.25rem;
   padding-bottom: 0;
   align-items: center;
   border-bottom: 0;
@@ -1953,22 +1875,12 @@ body {
 .wordmark {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.85rem;
   font-family: "Newsreader Variable", Georgia, serif;
-  font-size: clamp(2.7rem, 5vw, 4.25rem);
+  font-size: clamp(1.8rem, 2.4vw, 2.5rem);
   font-style: normal;
-  font-weight: 760;
-  letter-spacing: -0.065em;
-  line-height: 0.72;
-}
-
-.wordmark small {
-  color: var(--muted);
-  font-family: ui-monospace, monospace;
-  font-size: 0.62rem;
-  font-weight: 480;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 720;
+  letter-spacing: -0.05em;
+  line-height: 1;
 }
 
 .site-header nav {
@@ -2001,6 +1913,13 @@ body {
   text-decoration: none;
 }
 
+/* Theme names differ in length (tide/paper/nocturne); a fixed slot keeps the
+   rest of the nav from shifting when the label cycles. */
+.site-header nav .theme-trigger {
+  min-width: 5.75rem;
+  text-align: center;
+}
+
 .test-page {
   min-height: min(42rem, calc(100svh - 10.25rem));
   padding-block: clamp(1.5rem, 3vh, 2.75rem) 2rem;
@@ -2012,53 +1931,101 @@ body {
   padding: 0.15rem 0;
   align-content: flex-start;
   align-items: flex-start;
-  gap: 0.8rem 1.35rem;
+  gap: 0.8rem 1.9rem;
   border-bottom: 0;
   opacity: 1;
 }
 
+/* Config bar, Monkeytype-style: each setting family sits in one quiet pill,
+   options carry a small icon, and the active option is accent text alone. */
 .control-group,
 .code-language-control {
   position: relative;
-  padding-top: 1.35rem;
-  gap: 0.22rem;
+  min-inline-size: 0;
+  padding: 0.25rem 0.55rem;
+  gap: 0.3rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--ink), transparent 93%);
 }
 
-.control-group::before,
-.code-language-control::before {
-  position: absolute;
-  inset: 0 auto auto 0;
-  color: var(--muted);
-  content: attr(data-control-label);
-  font-size: 0.5rem;
-  letter-spacing: 0.12em;
+.test-controls button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  min-width: 2.15rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.55rem;
+  border: 0;
+  font-size: 0.68rem;
   line-height: 1;
-  text-transform: uppercase;
+  background: transparent;
+  transition: color 140ms ease-out;
 }
 
-.control-divider {
-  display: none;
+.test-controls button svg {
+  width: 0.78rem;
+  height: 0.78rem;
+  flex: none;
+}
+
+.control-glyph {
+  font-family: "Roboto Mono Variable", ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.test-controls button:hover:not(:disabled) {
+  background: transparent;
+  color: var(--ink);
+}
+
+.test-controls button[aria-pressed="true"] {
+  border-color: transparent;
+  background: transparent;
+  color: var(--accent);
+  box-shadow: none;
+}
+
+/* Settings and prompt swaps glide in instead of zapping: every control group
+   and the prompt surface fade-and-rise gently as they mount. */
+@keyframes soft-enter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+.test-controls .control-group,
+.test-controls .control-divider,
+.code-language-control,
+.custom-text-editor,
+.code-prompt-intro,
+.prompt-focus-surface {
+  animation: soft-enter 240ms ease-out both;
 }
 
 .test-controls button {
   min-width: 2.15rem;
   min-height: 2rem;
   padding: 0.4rem 0.55rem;
-  border: 1px solid transparent;
+  border: 0;
   font-size: 0.68rem;
   line-height: 1;
+  background: transparent;
+  transition: color 140ms ease-out;
 }
 
 .test-controls button:hover:not(:disabled) {
-  border-color: transparent;
-  background: color-mix(in srgb, var(--ink), transparent 94%);
+  background: transparent;
+  color: var(--ink);
 }
 
 .test-controls button[aria-pressed="true"] {
   border-color: transparent;
-  background: color-mix(in srgb, var(--accent), transparent 86%);
+  background: transparent;
   color: var(--accent);
-  box-shadow: inset 0 -2px var(--accent);
+  box-shadow: none;
 }
 
 .test-page--running .test-controls {
@@ -2080,6 +2047,19 @@ body {
   border: 0;
   border-radius: 0.2rem;
   background: color-mix(in srgb, var(--ink), transparent 94%);
+  color: var(--ink);
+  /* Native popups follow the select's color scheme; without this the option
+     list renders light-on-light in dark themes. */
+  color-scheme: dark;
+}
+
+:root[data-theme="paper"] .code-language-control select {
+  color-scheme: light;
+}
+
+.code-language-control select option {
+  background: var(--code-surface);
+  color: var(--code-text);
 }
 
 .typing-stage {
@@ -2109,18 +2089,11 @@ body {
 .test-status span:first-child {
   color: var(--accent);
   font-family: "Newsreader Variable", Georgia, serif;
-  font-size: clamp(1.65rem, 2.5vw, 2.3rem);
+  font-size: clamp(2.1rem, 3vw, 2.8rem);
   font-weight: 650;
   letter-spacing: -0.045em;
   line-height: 1;
-}
-
-.test-status span:last-child {
-  max-width: none;
-  font-size: 0.62rem;
-  letter-spacing: 0.08em;
-  line-height: 1.5;
-  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
 }
 
 .prompt-attribution {
@@ -2174,7 +2147,8 @@ body {
 
 .prompt-window {
   width: 100%;
-  max-height: 5.25em;
+  /* 3 lines at line-height 1.5 — whole lines only, so nothing clips mid-glyph */
+  max-height: 4.5em;
   gap: 0.04em 0.55em;
   color: var(--prompt-pending);
   /* Monkeytype-style reading comfort: light-weight monospace, zero
@@ -2244,6 +2218,21 @@ body {
   padding: 0;
   border-bottom: 0;
   background: transparent;
+}
+
+/* Keep the scrolling code window filling the workbench (minus the status
+   footer) so short exercises never leave an empty interior. */
+.code-workbench .prompt-window--code {
+  height: calc(100% - 1.8rem);
+  max-height: none;
+}
+
+.prompt-code-row--filler {
+  min-height: 1.7em;
+}
+
+.prompt-code-row--filler .prompt-code-line-number {
+  color: color-mix(in srgb, var(--code-comment), transparent 40%);
 }
 
 .code-workbench[data-capture-focused="true"],
@@ -2342,9 +2331,6 @@ body {
 }
 
 .result-primary h2,
-.page-heading h1,
-.record-strip strong,
-.personal-records h2,
 .dialog-heading h2 {
   font-style: normal;
   font-weight: 720;
@@ -2359,16 +2345,41 @@ body {
   min-height: 3.75rem;
   border-top: 0;
   color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+}
+
+.footer-hints {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.footer-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.site-footer kbd {
+  min-width: 2.4rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--faint);
+  border-bottom-width: 2px;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--ink), transparent 93%);
+  color: var(--ink);
+  font-family: "Roboto Mono Variable", ui-monospace, monospace;
+  font-size: 0.66rem;
   letter-spacing: 0.05em;
-  text-transform: uppercase;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
   .site-header {
-    height: 5.75rem;
+    height: 4.5rem;
   }
 
-  .wordmark small,
   .site-header nav a::before,
   .site-header nav button::before {
     display: none;
@@ -2407,7 +2418,7 @@ body {
 
   .site-header {
     height: auto;
-    min-height: 5.5rem;
+    min-height: 4.25rem;
     flex-wrap: wrap;
     row-gap: 0.15rem;
   }
@@ -2486,12 +2497,7 @@ body {
   }
 
   .test-status span:first-child {
-    font-size: clamp(1.8rem, 7vw, 2.2rem);
-  }
-
-  .test-status span:last-child {
-    max-width: none;
-    text-align: right;
+    font-size: clamp(2rem, 7vw, 2.6rem);
   }
 
   .prompt-focus-surface,

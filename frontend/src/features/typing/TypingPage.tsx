@@ -54,6 +54,7 @@ export function TypingPage() {
   const [notice, setNotice] = useState("");
   const [compositionText, setCompositionText] = useState("");
   const [captureFocused, setCaptureFocused] = useState(false);
+  const [customEditorOpen, setCustomEditorOpen] = useState(false);
   const [sound, setSound] = useState<KeyboardSoundPrefs>(() =>
     loadKeyboardSound(),
   );
@@ -189,12 +190,14 @@ export function TypingPage() {
             disabled={controlsDisabled}
             sound={sound}
             onSoundChange={updateSound}
+            onCustomEditorOpenChange={setCustomEditorOpen}
             onChange={(config, customText) => {
               changeConfig(config, customText);
               focusCapture();
             }}
           />
-          <div className="typing-stage">
+          {customEditorOpen ? null : (
+            <div className="typing-stage">
             <div className="test-status" aria-hidden="true">
               <span>
                 {state.config.mode === "time"
@@ -216,9 +219,6 @@ export function TypingPage() {
                       ),
                       String(state.prompt.words.length),
                     ].join("/")}
-              </span>
-              <span>
-                {state.status === "ready" ? "begin when ready" : null}
               </span>
             </div>
             <div className="typing-stage-main">
@@ -318,6 +318,7 @@ export function TypingPage() {
               </div>
             </div>
           </div>
+          )}
           <div className="typing-accessibility">
             <p id="typing-instructions">
               {state.status === "ready"

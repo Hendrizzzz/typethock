@@ -47,12 +47,16 @@ function AppFrame() {
       <header className="site-header">
         <Link to="/" className="wordmark" aria-label="TypeThock home">
           <span>TypeThock</span>
-          <small aria-hidden="true">typing practice</small>
         </Link>
         <nav aria-label="Primary navigation">
           <NavLink to="/" end>test</NavLink>
           <NavLink to="/history">history</NavLink>
-          <button type="button" onClick={cycleTheme} aria-label={`Theme: ${theme}. Change theme.`}>
+          <button
+            type="button"
+            className="theme-trigger"
+            onClick={cycleTheme}
+            aria-label={`Theme: ${theme}. Change theme.`}
+          >
             {theme}
           </button>
           <button
@@ -81,8 +85,17 @@ function AppFrame() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <footer className="site-footer">
-        <span>tab · restart</span>
-        <span>built for the daily practice</span>
+        <div className="footer-hints" aria-hidden="true">
+          <span className="footer-hint">
+            <kbd>tab</kbd>
+            <kbd>enter</kbd>
+            restart
+          </span>
+          <span className="footer-hint">
+            <kbd>esc</kbd>
+            restart
+          </span>
+        </div>
       </footer>
       <AccountDialog open={accountOpen} onClose={() => setAccountOpen(false)} />
     </div>

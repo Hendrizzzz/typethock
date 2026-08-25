@@ -48,7 +48,6 @@ test.describe("typing behavior parity", () => {
       "Current word: cat. Word 1 of 2.",
     );
     await expect(page.locator(".prompt-character.is-correct")).toHaveCount(0);
-    await expect(page.getByText("begin when ready", { exact: true })).toBeVisible();
 
     for (const shiftKey of [false, true]) {
       const outcome = await input.evaluate((element, shift) => {
@@ -106,7 +105,6 @@ test.describe("typing behavior parity", () => {
       "Current word: cat. Word 1 of 2.",
     );
     await expect(page.locator(".prompt-character.is-correct")).toHaveCount(0);
-    await expect(page.getByText("begin when ready", { exact: true })).toBeVisible();
 
     await input.press("c");
     await expect(page.locator(".prompt-character.is-correct")).toHaveCount(1);
@@ -336,7 +334,6 @@ test.describe("typing behavior parity", () => {
     input = page.getByRole("textbox", { name: "Typing input" });
     await expect(input).toBeFocused();
     await expect(page.locator(".prompt-character.is-correct")).toHaveCount(0);
-    await expect(page.getByText("begin when ready", { exact: true })).toBeVisible();
     await expect(page.locator("#current-target")).toContainText(
       "Current word: cat. Word 1 of 2.",
     );
@@ -355,7 +352,6 @@ test.describe("typing behavior parity", () => {
 
     input = page.getByRole("textbox", { name: "Typing input" });
     await expect(input).toBeFocused();
-    await expect(page.getByText("begin when ready", { exact: true })).toBeVisible();
     await expect(page.locator(".prompt-character.is-correct")).toHaveCount(0);
   });
 });

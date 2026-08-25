@@ -485,6 +485,18 @@ export function PromptView({
             </Fragment>
           );
         })}
+        {state.config.contentType === "code"
+          ? Array.from({ length: 14 }, (_, offset) => (
+              <span
+                className="prompt-code-row prompt-code-row--filler"
+                key={`filler-${String(offset)}`}
+              >
+                <span className="prompt-code-line-number">
+                  {String(state.prompt.words.length + offset + 1)}
+                </span>
+              </span>
+            ))
+          : null}
       </span>
     </button>
   );

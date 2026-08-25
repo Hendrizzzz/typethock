@@ -35,6 +35,91 @@ interface TestControlsProps {
   /** Optional keyboard-sound preference state and its persistence sink. */
   sound?: KeyboardSoundPrefs;
   onSoundChange?: (next: KeyboardSoundPrefs) => void;
+  /** Reports whether the custom-text editor is open, so the page can hide
+      the prompt stage while the user composes their own text. */
+  onCustomEditorOpenChange?: (open: boolean) => void;
+}
+
+type ControlIconName =
+  | "time"
+  | "words"
+  | "quote"
+  | "code"
+  | "custom"
+  | "strict"
+  | "thock";
+
+function ControlIcon({ name }: { name: ControlIconName }) {
+  const props = {
+    width: 12,
+    height: 12,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    "aria-hidden": true,
+  } as const;
+  switch (name) {
+    case "time":
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      );
+    case "words":
+      return (
+        <svg {...props}>
+          <path d="M4 19 12 4l8 15" />
+          <path d="M7 13h10" />
+        </svg>
+      );
+    case "quote":
+      return (
+        <svg {...props} fill="currentColor" stroke="none">
+          <path d="M4 5h7v7H7.5c0 2.6-1.1 4.3-3.5 5.4V5z" />
+          <path d="M13 5h7v7h-3.5c0 2.6-1.1 4.3-3.5 5.4V5z" />
+        </svg>
+      );
+    case "code":
+      return (
+        <svg {...props}>
+          <path d="m9 6-5 6 5 6" />
+          <path d="m15 6 5 6-5 6" />
+        </svg>
+      );
+    case "custom":
+      return (
+        <svg {...props}>
+          <path d="m4 20 1.2-4.2L16 5l3 3L8.2 18.8 4 20z" />
+        </svg>
+      );
+    case "strict":
+      return (
+        <svg {...props}>
+          <path d="M12 3 22 20H2L12 3z" />
+          <path d="M12 10v4" />
+          <path d="M12 17h.01" />
+        </svg>
+      );
+    case "thock":
+      return (
+        <svg {...props}>
+          <path d="M4 10v4h4l5 4V6L8 10H4z" />
+          <path d="M16.5 9.5a3.5 3.5 0 0 1 0 5" />
+        </svg>
+      );
+  }
+}
+
+function ControlGlyph({ glyph }: { glyph: string }) {
+  return (
+    <span className="control-glyph" aria-hidden="true">
+      {glyph}
+    </span>
+  );
 }
 
 export function TestControls({
@@ -44,16 +129,20 @@ export function TestControls({
   firstControlRef,
   sound,
   onSoundChange,
+  onCustomEditorOpenChange,
 }: TestControlsProps) {
-  const editorDescriptionId = useId();
   const editorErrorId = useId();
   const customButtonRef = useRef<HTMLButtonElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [customDraft, setCustomDraft] = useState("");
   const [customError, setCustomError] = useState("");
-  const wordContent = config.contentType === "words";
-  const codeContent = config.contentType === "code";
+  const wordContent = !editorOpen && config.contentType === "words";
+  const codeContent = !editorOpen && config.contentType === "code";
+  // While the custom editor is open, custom is the active source in the UI;
+  // the config itself only switches once text is applied (a textless custom
+  // prompt cannot be generated).
+  const customActive = editorOpen || config.contentType === "custom";
   const values = config.mode === "time" ? TIME_VALUES : WORD_VALUES;
 
   useEffect(() => {
@@ -61,6 +150,10 @@ export function TestControls({
       editorRef.current?.focus({ preventScroll: true });
     }
   }, [editorOpen]);
+
+  useEffect(() => {
+    onCustomEditorOpenChange?.(editorOpen);
+  }, [editorOpen, onCustomEditorOpenChange]);
 
   const applyConfig = (next: TestConfig, nextCustomText?: string) => {
     setEditorOpen(false);
@@ -153,11 +246,12 @@ export function TestControls({
             ref={contentType === "words" ? firstControlRef : undefined}
             key={contentType}
             disabled={disabled}
-            aria-pressed={config.contentType === contentType}
+            aria-pressed={!editorOpen && config.contentType === contentType}
             onClick={() => {
               setContent(contentType);
             }}
           >
+            <ControlIcon name={contentType} />
             {contentType}
           </button>
         ))}
@@ -167,11 +261,12 @@ export function TestControls({
           disabled={disabled}
           aria-expanded={editorOpen}
           aria-controls="custom-text-editor"
-          aria-pressed={config.contentType === "custom"}
+          aria-pressed={customActive}
           onClick={() => {
             setContent("custom");
           }}
         >
+          <ControlIcon name="custom" />
           custom
         </button>
       </fieldset>
@@ -191,6 +286,7 @@ export function TestControls({
                   setMode(mode);
                 }}
               >
+                <ControlIcon name={mode} />
                 {mode}
               </button>
             ))}
@@ -284,6 +380,7 @@ export function TestControls({
               });
             }}
           >
+            <ControlGlyph glyph="@" />
             punctuation
           </button>
           <button
@@ -294,6 +391,7 @@ export function TestControls({
               applyConfig({ ...config, numbers: !config.numbers });
             }}
           >
+            <ControlGlyph glyph="#" />
             numbers
           </button>
         </fieldset>
@@ -314,6 +412,7 @@ export function TestControls({
             });
           }}
         >
+          <ControlIcon name="strict" />
           strict
         </button>
       </fieldset>
@@ -335,6 +434,7 @@ export function TestControls({
               }
             }}
           >
+            <ControlIcon name="thock" />
             thock
           </button>
           {sound.enabled ? (
@@ -371,21 +471,12 @@ export function TestControls({
             rows={5}
             maxLength={2_000}
             value={customDraft}
-            aria-describedby={[
-              editorDescriptionId,
-              customError ? editorErrorId : "",
-            ]
-              .filter(Boolean)
-              .join(" ")}
             onChange={(event) => {
               setCustomDraft(event.currentTarget.value);
               if (customError) setCustomError("");
             }}
           />
           <div className="custom-editor-meta">
-            <p id={editorDescriptionId}>
-              Plain text only. It stays in this tab and is never uploaded.
-            </p>
             <span>{String(customDraft.length)}/2000</span>
           </div>
           {customError ? (

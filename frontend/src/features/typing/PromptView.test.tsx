@@ -85,7 +85,9 @@ describe("code prompt presentation", () => {
       />,
     );
     const rows = Array.from(
-      container.querySelectorAll<HTMLElement>(".prompt-code-row"),
+      container.querySelectorAll<HTMLElement>(
+        ".prompt-code-row:not(.prompt-code-row--filler)",
+      ),
     );
 
     expect(
